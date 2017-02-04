@@ -91,3 +91,27 @@ smooth = enmap.harm2map(fmap)
 print "Displaying smoothed map"
 for m in smooth: matshow(m)
 show()
+
+# Let's try to project to a different coordinate system.
+# Our example map was in CAR. Let's try switching to CEA
+# with the same fiducial resolution.
+shape2, wcs2 = enmap.geometry(pos=map.box(), res=0.5*utils.arcmin, proj="cea")
+map_cea = map.project(shape2, wcs2)
+print "Displaying car anc cea T maps. On a map this small the difference isn't really visible"
+matshow(map[0]); matshow(map_cea[0]); show()
+
+# We can also use this interpolation to zoom. Let's
+# create a very high res coordinate system in a small
+# area.
+shape3, wcs3 = enmap.geometry(pos=[[-0.2*deg,-0.2*deg],[0.2*deg,0.2*deg]],res=0.05*utils.arcmin)
+map_zoom = map.project(shape3, wcs3)
+print "Displaying zoomed map"
+matshow(map_zoom[0]); show()
+
+# The interpolation uses 3rd order spline interpolation by default.
+# If we want to see how the old pixels map to the new ones we can
+# use 0th order interpolation (nearest neighbor). This is very fast,
+# but not what you usually want to do.
+map_zoom_nn = map.project(shape3, wcs3, order=0)
+print "Displaying 0th order zoomed map"
+matshow(map_zoom_nn[0]); show()
